@@ -11,11 +11,17 @@ $("body").append(`
     <input type="text" name="createBody"/>
     <input type="submit" value="Create To Do">
     </form>
+
+    <hr>
+    <form id="editForm">
+    <input type="text" name="editTitle"/>
+    <input type="text" name="editBody"/>
+    <input type="submit" value="Edit To Do">
+    </form>
     <hr>
     <h2>The Todos</h2>
     <ul id="todolist">
-
-</ul>
+    </ul>
 `);
 
 // The UL for the To Do list
@@ -26,6 +32,13 @@ const $createForm = $("#createForm");
 const $createTitle = $('input[name="createTitle"]');
 const $createBody = $('input[name="createBody"]');
 
+// Edit Form Variables
+const $editForm = $("#editForm");
+const $editTitle = $('input[name="editTitle"]');
+const $editBody = $('input[name="editBody"]');
+let editId = 0;
+
+// API url
 const baseUrl = "http://localhost:3000/todos";
 
 // Function to grab todos from backend
@@ -46,9 +59,17 @@ const renderTodos = async () => {
 
     $li.html(`
         <h3>${todo.title}</h3>
-        <h4>${todo.body}</h4>`);
+        <h4>${todo.body}</h4>
+        <button id="${todo.id}editbutton">Edit</button>
+    `);
 
     $todoList.append($li);
+
+    $(`#${todo.id}editbutton`).on("click", () => {
+      $editTitle.val(todo.title);
+      $editBody.val(todo.body);
+      editId = todo.id;
+    });
   });
 };
 
@@ -70,8 +91,29 @@ const createTodo = async (event) => {
   $createBody.val("");
 };
 
+// Edit Function
+const updateTodo = async (event) => {
+  event.preventDefault();
+  await fetch(baseUrl + "/" + editId, {
+    method: "put",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      title: $editTitle.val(),
+      body: $editBody.val(),
+    }),
+  });
+  renderTodos();
+  $editTitle.val("");
+  $editBody.val("");
+};
+
 // Add Event Listener to Form
 $createForm.on("submit", createTodo);
+
+// Add event Listener to Form
+$editForm.on("submit", updateTodo);
 
 // Initial Fetch of Todos
 renderTodos();
