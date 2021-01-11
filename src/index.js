@@ -61,14 +61,24 @@ const renderTodos = async () => {
         <h3>${todo.title}</h3>
         <h4>${todo.body}</h4>
         <button id="${todo.id}editbutton">Edit</button>
+        <button id="${todo.id}deletebutton">Delete</button>
     `);
 
     $todoList.append($li);
 
+    // Add the function to the edit button
     $(`#${todo.id}editbutton`).on("click", () => {
       $editTitle.val(todo.title);
       $editBody.val(todo.body);
       editId = todo.id;
+    });
+
+    // Add function to delete button
+    $(`#${todo.id}deletebutton`).on("click", async () => {
+      await fetch(baseUrl + "/" + todo.id, {
+        method: "delete",
+      });
+      renderTodos();
     });
   });
 };
