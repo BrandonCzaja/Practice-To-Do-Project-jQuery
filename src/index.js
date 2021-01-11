@@ -23,3 +23,19 @@ const fetchTodos = async () => {
 };
 
 // Render todos to DOM
+const renderTodos = async () => {
+  const todos = await fetchTodos();
+
+  todos.forEach((todo) => {
+    const $li = $("<li>");
+
+    $li.html(`
+        <h3>${todo.title}</h3>
+        <h4>${todo.body}</h4>`);
+
+    $todoList.append($li);
+  });
+};
+
+// Initial Fetch of Todos
+renderTodos();
